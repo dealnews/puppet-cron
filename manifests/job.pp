@@ -16,7 +16,7 @@
 #   weekday - The day of the week the cron job should fire on. Can be any valid cron weekday value.
 #     Defaults to '*'.
 #   environment - An array of environment variable settings.
-#     Defaults to an empty set ([]).
+#     Defaults to $::cron::default_environment..
 #   mode - The mode to set on the created job file
 #     Defaults to 0644.
 #   user - The user the cron job should be executed as.
@@ -36,8 +36,9 @@
 #   }
 define cron::job(
   $command, $minute = '*', $hour = '*', $date = '*', $month = '*', $weekday = '*',
-  $environment = [], $user = 'root', $mode = 0644, $ensure = 'present'
+  $environment = 'UNSET', $user = 'root', $mode = 0644, $ensure = 'present'
 ) {
+  include cron
 
   case $ensure {
     'present': { $real_ensure = file }
@@ -45,13 +46,19 @@ define cron::job(
     default:   { fail("Invalid value '${ensure}' used for ensure") }
   }
 
+  $environment_real = $environment ? {
+    'UNSET' => $::cron::default_environment,
+    default => $environment
+  }
+
+
   file {
     "job_${title}":
       ensure  => $real_ensure,
       owner   => 'root',
       group   => 'root',
       mode    => $mode,
-      path    => "/etc/cron.d/${title}",
+      path    => "${::cron::job_path}/${::cron::job_prefix}${title}",
       content => template( 'cron/job.erb' );
   }
 }

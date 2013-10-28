@@ -12,7 +12,7 @@
 #   weekday - The day of the week the cron job should fire on. Can be any valid cron weekday value.
 #     Defaults to '0'.
 #   environment - An array of environment variable settings.
-#     Defaults to an empty set ([]).
+#     Defaults to $::cron::default_environment..
 #   user - The user the cron job should be executed as.
 #     Defaults to 'root'.
 #   mode - The mode to set on the created job file
@@ -35,7 +35,7 @@
 
 define cron::weekly(
   $command, $minute = 0, $hour = 0, $weekday = 0, $user = 'root',
-  $mode = '0640', $ensure = 'present', $environment = []
+  $mode = '0640', $ensure = 'present', $environment = 'UNSET'
 ) {
   cron::job {
     $title:

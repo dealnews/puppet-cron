@@ -17,7 +17,7 @@ describe 'cron::weekly' do
       'month'       => '*',
       'weekday'     => params[:weekday],
       'user'        => params[:user] || 'root',
-      'environment' => params[:environment] || [],
+      'environment' => params[:environment] || 'UNSET',
       'mode'        => params[:mode] || '0640',
       'command'     => params[:command]
     )
