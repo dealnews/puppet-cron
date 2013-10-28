@@ -12,7 +12,7 @@
 #   date - The date the cron job should fire on. Can be any valid cron date value.
 #     Defaults to '1'.
 #   environment - An array of environment variable settings.
-#     Defaults to an empty set ([]).
+#     Defaults to $::cron::default_environment..
 #   user - The user the cron job should be executed as.
 #     Defaults to 'root'.
 #   mode - The mode to set on the created job file
@@ -35,7 +35,7 @@
 
 define cron::monthly(
   $command, $minute = 0, $hour = 0, $date = 1,
-  $environment = [], $user = 'root', $mode = 0644, $ensure = 'present'
+  $environment = 'UNSET', $user = 'root', $mode = 0644, $ensure = 'present'
 ) {
   cron::job {
     $title:

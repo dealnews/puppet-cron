@@ -10,7 +10,7 @@
 #   hour - The hour the cron job should fire on. Can be any valid cron hour value.
 #     Defaults to '0'.
 #   environment - An array of environment variable settings.
-#     Defaults to an empty set ([]).
+#     Defaults to $::cron::default_environment.
 #   user - The user the cron job should be executed as.
 #     Defaults to 'root'.
 #   mode - The mode to set on the created job file
@@ -31,7 +31,7 @@
 #   }
 
 define cron::daily(
-  $command, $minute = 0, $hour = 0, $environment = [],
+  $command, $minute = 0, $hour = 0, $environment = 'UNSET',
   $user = 'root', $mode = 0644, $ensure = 'present'
 ){
   cron::job {
