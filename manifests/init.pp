@@ -32,7 +32,7 @@
 #   }
 class cron (
   $default_environment = [],
-  $job_path     = '/etc/cron.d',
+  $job_path       = '/etc/cron.d',
   $job_prefix     = '',
   $manage_install = true,
   $tidy           = false,
