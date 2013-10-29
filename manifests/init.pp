@@ -7,7 +7,8 @@
 #
 # job_path - Job install path. Probably will always be default
 #  of /etc/cron.d/ but this gives an easy way to test jobs without
-#  breaking everything
+#  breaking everything.  Module will raise and error when tidy is
+#  enabled and job_path is not /etc/cron.d or /tmp.
 #
 # job_prefix - Prefix to add to all job files.  This is also used in the
 #  glob for tidy cleanup. Will raise an error when tidy is enabled
@@ -17,7 +18,9 @@
 #  Default is true.
 #
 # tidy - Whether or not to enable purge.  Default is false.
-#   Will raise and error when enabled and  job_prefix is ''.
+#  Will raise and error when enabled and  job_prefix is ''.
+#  Module will raise and error when tidy is enabled and
+#  job_path is not /etc/cron.d or /tmp.
 #
 # Actions:
 #
@@ -44,6 +47,9 @@ class cron (
   if $tidy {
     if $job_prefix == '' {
       fail('Job prefix must not be blank if you enable tidy on Cron class')
+    }
+    if $job_path != '/etc/cron.d' and $job_path != '/tmp' {
+      fail('Job path must be /etc/cron.d or /tmp if you enable tidy on Cron class')
     }
     tidy { 'puppet-cron-tidy':
       path    => $job_path,
