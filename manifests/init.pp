@@ -28,11 +28,13 @@
 #
 # Sample Usage:
 #   include 'cron'
+#
 #   class { 'cron':
 #     package_ensure => false,
 #     tidy           => true,
 #     job_prefix     => 'myjobs_',
 #   }
+#
 class cron (
   $package_ensure      = 'installed',
   $default_environment = [],

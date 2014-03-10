@@ -35,15 +35,19 @@
 #       command     => 'puppet doc --modulepath /etc/puppet/modules >/var/www/puppet_docs.mkd';
 #   }
 define cron::job(
-  $command, $minute = '*', $hour = '*', $date = '*', $month = '*', $weekday = '*',
-  $environment = 'UNSET', $user = 'root', $mode = 0644, $ensure = 'present'
+  $command = 'UNSET', $minute = '*', $hour = '*', $date = '*', $month = '*', $weekday = '*',
+  $environment = 'UNSET', $user = 'root', $mode = '0644', $ensure = 'present'
 ) {
   include cron
 
   case $ensure {
-    'present': { $real_ensure = file }
-    'absent':  { $real_ensure = absent }
-    default:   { fail("Invalid value '${ensure}' used for ensure") }
+    'present': { $real_ensure = 'file' }
+    'absent':  { $real_ensure = 'absent' }
+    default:   { fail("Cron::Job[${title}]: Invalid value '${ensure}' used for ensure") }
+  }
+
+  if $real_ensure == 'file' and $command == 'UNSET' {
+    fail("Cron::Job[${title}]: command parameter must exist when ensure => present")
   }
 
   $environment_real = $environment ? {
@@ -51,15 +55,23 @@ define cron::job(
     default => $environment
   }
 
-
-  file {
-    "job_${title}":
+  if $real_ensure == 'file' {
+    file {
+      "job_${title}":
       ensure  => $real_ensure,
       owner   => 'root',
       group   => 'root',
       mode    => $mode,
       path    => "${::cron::job_path}/${::cron::job_prefix}${title}",
       content => template( 'cron/job.erb' );
+    }
+  } else {
+    # allow someone to remove a job by it's title only.
+    file {
+      "job_${title}":
+          ensure => $real_ensure,
+          path   => "${::cron::job_path}/${::cron::job_prefix}${title}",
+    }
   }
-}
 
+}

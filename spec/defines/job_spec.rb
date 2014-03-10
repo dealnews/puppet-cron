@@ -54,13 +54,24 @@ describe 'cron::job' do
 
   describe 'job with ensure set to absent' do
     let( :params ) {{
-      :ensure  => 'absent',
-      :command => 'mysqldump -u root test_db >some_file',
+      :ensure  => 'absent'
     }}
 
     it do
       should contain_file( "job_#{title}" ).with( 'ensure' => 'absent' )
     end
   end
+
+  describe 'job with ensure set to present, but missing command' do
+    let( :params ) {{
+      :ensure  => 'present'
+    }}
+    it 'should raise an error' do
+      expect {
+        should contain_file( "job_#{title}" ).with( 'ensure' => 'present' )
+      }.to raise_error(Puppet::Error, /command parameter must exist when ensure => present/)
+    end
+  end
+
 end
 

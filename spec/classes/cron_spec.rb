@@ -1,12 +1,18 @@
 require 'spec_helper'
+
 describe 'cron', :type => :class do
 
-  context 'default params' do
-    it { should include_class( 'cron::install' ) }
+  context 'when using default params' do
+    it { should contain_class('cron::install') }
   end
 
   context 'with tidy => true, job_prefix => "puppet-cron-"' do
-    let (:params) { { :tidy => true, :job_prefix => 'puppet-cron-' } }
+    let(:params) do
+      {
+        :tidy       => true,
+        :job_prefix => 'puppet-cron-'
+      }
+    end
     it do
         should contain_tidy('puppet-cron-tidy').with({
             'path'    => '/etc/cron.d',
@@ -17,15 +23,15 @@ describe 'cron', :type => :class do
   end
 
   context 'with tidy => true, job_prefix => ""' do
-    let (:params) { { :tidy => true } }
+    let(:params) { { :tidy => true } }
     it do
       expect { should contain_tidy('puppet-cron-tidy')}.to raise_error(Puppet::Error,/Job prefix must not be blank if you enable tidy on Cron class/)
     end
   end
 
   context 'with package_ensure => absent' do
-    let (:params) { { :package_ensure => 'absent' } }
-    it { should_not include_class( '::cron::install' ) }
+    let(:params) { { :package_ensure => 'absent' } }
+    it { should contain_class('cron::install').with_package_ensure('absent') }
   end
 
 end
