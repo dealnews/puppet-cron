@@ -1,9 +1,9 @@
 require 'spec_helper'
 describe 'cron', :type => :class do
+
   context 'default params' do
     it { should include_class( 'cron::install' ) }
   end
-
 
   context 'with tidy => true, job_prefix => "puppet-cron-"' do
     let (:params) { { :tidy => true, :job_prefix => 'puppet-cron-' } }
@@ -23,9 +23,9 @@ describe 'cron', :type => :class do
     end
   end
 
-  context 'with manage_install => false' do
-    let (:params) { { :manage_install => false } }
-    it { should_not include_class( 'cron::install' ) }
+  context 'with package_ensure => absent' do
+    let (:params) { { :package_ensure => 'absent' } }
+    it { should_not include_class( '::cron::install' ) }
   end
-end
 
+end

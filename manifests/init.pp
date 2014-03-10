@@ -2,6 +2,9 @@
 # This class wraps *cron::instalL* for ease of use
 #
 # Parameters:
+# package_ensure - Can be set to a package version, 'latest', 'installed' or
+#  'present'.
+#
 # default_environment - Allow you to set and environment in one
 #  place for all your cron jobs.
 #
@@ -13,9 +16,6 @@
 # job_prefix - Prefix to add to all job files.  This is also used in the
 #  glob for tidy cleanup. Will raise an error when tidy is enabled
 #  and job_prefix is set to ''.
-#
-# manage_install - Whether or not to manage package install.
-#  Default is true.
 #
 # tidy - Whether or not to enable purge.  Default is false.
 #  Will raise and error when enabled and  job_prefix is ''.
@@ -29,20 +29,19 @@
 # Sample Usage:
 #   include 'cron'
 #   class { 'cron':
-#     tidy           => true
-#     manage_install => false
-#     job_prefix     => 'myjobs_'
+#     package_ensure => false,
+#     tidy           => true,
+#     job_prefix     => 'myjobs_',
 #   }
 class cron (
+  $package_ensure      = 'installed',
   $default_environment = [],
-  $job_path       = '/etc/cron.d',
-  $job_prefix     = '',
-  $manage_install = true,
-  $tidy           = false,
+  $job_path            = '/etc/cron.d',
+  $job_prefix          = '',
+  $tidy                = false,
 ) {
-  if $manage_install {
-    include cron::install
-  }
+
+  class { '::cron::install': package_ensure => $package_ensure }
 
   if $tidy {
     if $job_prefix == '' {
